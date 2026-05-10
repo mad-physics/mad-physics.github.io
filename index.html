@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MaD Physics: Evaluating Information-Seeking Under Constraints in Physical Environments</title>
+  <meta name="description" content="MaD Physics is a benchmark for evaluating LLM agents on cost-constrained measurement and prediction in classical, fluid, and quantum mechanics environments — including altered physical laws." />
+  <meta property="og:title" content="MaD Physics" />
+  <meta property="og:description" content="A benchmark for evaluating information-seeking agents under measurement constraints in physical environments." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="static/images/teaser.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/css/main.css" />
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <h1>
+      <span class="name">MaD Physics</span><br />
+      Evaluating Information Seeking Under Constraints in Physical Environments
+    </h1>
+
+    <div class="authors">
+      <span class="author">Moksh Jain<sup>1,2,*</sup></span>,
+      <span class="author">Mehdi Bennani<sup>1</sup></span>,
+      <span class="author">Johannes Bausch<sup>1</sup></span>,
+      <span class="author">Yuri Chervonyi<sup>1</sup></span>,
+      <span class="author">Bogdan Georgiev<sup>1</sup></span>,
+      <span class="author">Simon Osindero<sup>1</sup></span>,
+      <span class="author">Nenad Toma&scaron;ev<sup>1</sup></span>
+    </div>
+
+    <div class="affils">
+      <sup>1</sup>Google DeepMind &nbsp;&middot;&nbsp;
+      <sup>2</sup>Mila &mdash; Quebec AI Institute, Universit&eacute; de Montr&eacute;al
+    </div>
+    <div class="correspondence">
+      <sup>*</sup>Work done during an internship at Google DeepMind.
+      Correspondence: <a href="mailto:mokshjn00@gmail.com">mokshjn00@gmail.com</a>, <a href="mailto:nenadt@google.com">nenadt@google.com</a>
+    </div>
+
+    <div class="button-row">
+      <a class="btn primary" href="paper/main.pdf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Paper
+      </a>
+      <a class="btn disabled" aria-disabled="true" title="Coming soon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Code &middot; coming soon
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="teaser">
+  <div class="container">
+    <img src="static/images/teaser.png" alt="MaD Physics overview: measurement and prediction phases" />
+    <div class="caption">
+      <strong>MaD Physics</strong> consists of two phases: <em>Measurement</em> (top), where the agent interacts with a physical environment to make observations under a budget &mdash; each observation incurs a cost that depends on the choice and fidelity of the measurement; and <em>Prediction</em> (bottom), where the agent must use the collected observations to predict the state of the system at a queried future time.
+    </div>
+  </div>
+</section>
+
+<section id="abstract">
+  <div class="container">
+    <h2>Abstract</h2>
+    <p class="lead">
+      Scientific discovery is fundamentally a resource-constrained process that requires navigating complex trade-offs between the quality and quantity of measurements due to physical and cost constraints. Existing benchmarks for evaluating agents for scientific discovery focus on either static knowledge-based reasoning or unconstrained experimental design tasks, and do not capture the ability to make measurements and plan under constraints.
+    </p>
+    <p>
+      To bridge this gap, we propose <strong>Measuring and Discovering Physics (MaD Physics)</strong>, a benchmark to evaluate the ability of agents to make informative measurements and conclusions subject to constraints on the quality and quantity of measurements. The benchmark consists of three environments, each based on a distinct physical law. To mitigate contamination from existing knowledge, MaD Physics includes <em>altered</em> physical laws. In each trial, the agent makes measurements of the system until it exhausts an allotted budget, and then must infer the underlying physical law to make predictions about the future state of the system.
+    </p>
+    <p>
+      MaD Physics evaluates two fundamental capabilities of scientific agents: inferring models from data and planning under constraints. We also demonstrate how MaD Physics can be used to evaluate other capabilities such as multimodality and in-context learning. We benchmark agents on MaD Physics using four Gemini models (2.5 Flash Lite, 2.5 Flash, 2.5 Pro, and 3 Flash), identifying shortcomings in their structured exploration and data collection capabilities, and highlighting directions to improve their scientific reasoning.
+    </p>
+  </div>
+</section>
+
+<section id="features" class="tinted">
+  <div class="container">
+    <span class="section-eyebrow">What's inside</span>
+    <h2>Benchmark Features</h2>
+    <ul class="features">
+      <li>
+        <strong>3 minimal physical domains.</strong> Classical, fluid, and quantum mechanics environments, each considering a minimal system governed by a physical law.
+      </li>
+      <li>
+        <strong>Altered physics.</strong> Modified laws allow evaluation of information-seeking capability instead of memorization.
+      </li>
+      <li>
+        <strong>Measurement under budget.</strong> Each observation has a cost; agents must trade off quality versus quantity within a fixed measurement budget.
+      </li>
+      <li>
+        <strong>Prediction from collected data.</strong> After the measurement phase, agents must infer the underlying law and predict the system's future state.
+      </li>
+      <li>
+        <strong>Multiple evaluation modes.</strong> Numerical and image-based observations, in-context learning across episodes, and parameter inference under a known structural form.
+      </li>
+      <!-- <li>
+        <strong>Code execution scaffold.</strong> Agents have access to a Python environment to analyze observations and form predictions.
+      </li> -->
+    </ul>
+  </div>
+</section>
+
+<section id="environments">
+  <div class="container">
+    <span class="section-eyebrow">Three physical domains</span>
+    <h2>Environments</h2>
+    <!-- <p>
+      Each task places the agent in a dynamical environment governed by physical laws that may be <em>altered</em> &mdash; classical mechanics with anisotropic inertia, quantum systems with modified probability rules, or fluids with non-standard forcing terms. This ensures that agents cannot rely solely on memorized knowledge and must engage in active discovery.
+    </p> -->
+
+    <!-- Classical -->
+    <div class="env-block" id="classical">
+      <div class="head">
+        <span class="tag">Domain 1</span>
+        <h3>Classical Mechanics</h3>
+      </div>
+      <p class="desc">
+        A system of <em>N</em> spherical objects evolving under Newtonian dynamics, with optional <strong>anisotropic inertial mass</strong> (governed by a coupling constant&nbsp;&kappa;) and <strong>modified gravity</strong> laws (1/<em>r</em> or rippled).
+      </p>
+
+      <div class="video-grid">
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/aniso_0.0_1_0.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Normal.</strong> Standard Newtonian dynamics &mdash; no alteration.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/aniso_0.0_2_0.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>1/<em>r</em> gravity.</strong> Modified gravity: gravitational force &prop; 1/<em>r</em>.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/aniso_0.0_4_0.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Ripple gravity.</strong> Modified gravity: rippled inverse-square law.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/aniso_10.0_1_0.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Anisotropic &kappa;=10.</strong> Anisotropic inertia with &kappa;&nbsp;=&nbsp;10.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/aniso_20.0_1_0.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Anisotropic &kappa;=20.</strong> Anisotropic inertia with &kappa;&nbsp;=&nbsp;20.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/aniso_10.0_2_0.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Combined.</strong> Anisotropic inertia (&kappa;&nbsp;=&nbsp;10) with 1/<em>r</em> gravity.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- Fluid -->
+    <div class="env-block" id="fluid">
+      <div class="head">
+        <span class="tag">Domain 2</span>
+        <h3>Fluid Mechanics</h3>
+      </div>
+      <p class="desc">
+        2D incompressible viscous flow (Kelvin&ndash;Helmholtz instability), governed by the Navier&ndash;Stokes equations. Alterations introduce a state-dependent <strong>gyroscopic forcing</strong> that perturbs the velocity perpendicular to the flow, modulated by either local kinetic energy (<em>velocity modulation</em>) or vorticity (<em>vorticity modulation</em>).
+      </p>
+
+      <div class="video-grid">
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/fluid_42_none.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Normal.</strong> Standard Navier&ndash;Stokes &mdash; no alteration.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/fluid_42_velocity.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Velocity mod.</strong> Gyroscopic forcing scaled by local kinetic energy.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/fluid_42_vorticity.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Vorticity mod.</strong> Opposing force layers within turbulent eddies.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/fluid_42_hybrid.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Combined.</strong> A convex combination of velocity and vorticity modulation.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- Quantum -->
+    <div class="env-block" id="quantum">
+      <div class="head">
+        <span class="tag">Domain 3</span>
+        <h3>Quantum Mechanics</h3>
+      </div>
+      <p class="desc">
+        Two particles in a 2D box, evolving under the time-dependent Schr&ouml;dinger equation with smoothed infinite-well potentials. Alterations include a <strong>generalized Born rule</strong> (probability density <em>p</em>-norm with <em>p</em>&nbsp;&ne;&nbsp;2) and <strong>non-linear entanglement initialization</strong> (spatial-correlation factor parameterized by &lambda;).
+      </p>
+
+      <div class="video-grid">
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/quantum_False_2.0_1.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Normal (<em>p</em>=2).</strong> Standard quantum mechanics: separable initial state, <em>p</em>&nbsp;=&nbsp;2 Born rule.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/quantum_False_3.0_1.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Born rule <em>p</em>=3.</strong> Generalized Born rule with <em>p</em>&nbsp;=&nbsp;3 &mdash; modified measurement postulate.</figcaption>
+        </figure>
+        <figure class="video-item">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="videos/quantum_True_2.0_1.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <figcaption><strong>Entangled init.</strong> Non-linear entanglement initialization with spatial correlation factor.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="main-results">
+  <div class="container">
+    <h2>Main Results</h2>
+    <p>
+      We benchmark a minimal agent scaffold with code execution across <strong>Gemini 2.5 Flash Lite, 2.5 Flash, 2.5 Pro, and 3 Flash</strong>. Performance generally improves with model capability, and a <em>Strategy</em> system prompt inspired by Bayesian experimental design tends to help. However, even the strongest models struggle to recover correct symbolic forms of the underlying laws, and smaller Gemini 2.5 models often produce out-of-bounds predictions in classical mechanics, indicating headroom for both better scaffolds and base capabilities.
+    </p>
+    <!-- <p>
+      Prediction error across the three environments for four Gemini models, with both the <em>Base</em> and <em>+ Strategy</em> system prompts. Each environment includes a <em>Normal</em> setting plus two alterations (with two intensities each) and a <em>Combined</em> alteration. Lower is better; the best entry per column is highlighted.
+    </p> -->
+    <p class="results-note">Predictions are <strong>not</strong> clipped — entries far above 1 in the Classical table reflect runaway out-of-bounds predictions, separating models that produce stable predictions from those that don't.</p>
+
+    <div class="results-table-wrap">
+      <table class="results">
+        <caption>Classical Mechanics &mdash; combined config uses &kappa;=10 with 1/<em>r</em> gravity</caption>
+        <thead>
+          <tr>
+            <th rowspan="3" class="left">Model</th>
+            <th rowspan="3" class="left">Prompt</th>
+            <th colspan="6" class="group">Prediction Error&nbsp;&darr;</th>
+          </tr>
+          <tr>
+            <th rowspan="2">Normal</th>
+            <th colspan="2" class="group">Anisotropic Inertia</th>
+            <th colspan="2" class="group">Altered Gravity</th>
+            <th rowspan="2">Combined</th>
+          </tr>
+          <tr>
+            <th>&kappa;=10</th>
+            <th>&kappa;=20</th>
+            <th>1/<em>r</em></th>
+            <th>Ripple</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Flash Lite</td><td class="left">Base</td><td>6.61</td><td>13.78</td><td>831.97</td><td>638.25</td><td>253.44</td><td>1241.11</td></tr>
+          <tr><td class="left">+ Strategy</td><td>48.32</td><td>115.02</td><td>74.62</td><td>463.83</td><td>1183.7</td><td>964.43</td></tr>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Flash</td><td class="left">Base</td><td>5.97</td><td>35.36</td><td>4.42</td><td>28.22</td><td>66.75</td><td>198.69</td></tr>
+          <tr><td class="left">+ Strategy</td><td>7.93</td><td>12.32</td><td>60.36</td><td>26.45</td><td>44.32</td><td>23.33</td></tr>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Pro</td><td class="left">Base</td><td>1.93</td><td>2.12</td><td>13.41</td><td>11.40</td><td>15.67</td><td>38.72</td></tr>
+          <tr><td class="left">+ Strategy</td><td>0.67</td><td>1.56</td><td>0.37</td><td>1.22</td><td>0.50</td><td>0.49</td></tr>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 3 Flash</td><td class="left">Base</td><td class="best">0.29</td><td class="best">0.36</td><td>0.88</td><td class="best">0.31</td><td class="best">0.39</td><td>0.38</td></tr>
+          <tr><td class="left">+ Strategy</td><td>0.38</td><td>0.39</td><td class="best">0.37</td><td>0.37</td><td>0.43</td><td class="best">0.35</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="results-table-wrap">
+      <table class="results">
+        <caption>Fluid Mechanics &mdash; combined config uses a convex combination of velocity and vorticity modulation</caption>
+        <thead>
+          <tr>
+            <th rowspan="3" class="left">Model</th>
+            <th rowspan="3" class="left">Prompt</th>
+            <th colspan="6" class="group">Prediction Error&nbsp;&darr;</th>
+          </tr>
+          <tr>
+            <th rowspan="2">Normal</th>
+            <th colspan="2" class="group">Velocity Modulation</th>
+            <th colspan="2" class="group">Vorticity Modulation</th>
+            <th rowspan="2">Combined</th>
+          </tr>
+          <tr>
+            <th>&gamma;=0.5</th>
+            <th>&gamma;=0.7</th>
+            <th>&gamma;=5.0</th>
+            <th>&gamma;=10.0</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Flash Lite</td><td class="left">Base</td><td>0.68</td><td>0.73</td><td>0.82</td><td>0.65</td><td>0.81</td><td>1.02</td></tr>
+          <tr><td class="left">+ Strategy</td><td>0.41</td><td>3.26</td><td>0.81</td><td>0.59</td><td>0.73</td><td>0.81</td></tr>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Flash</td><td class="left">Base</td><td>0.47</td><td>0.51</td><td>0.66</td><td>0.82</td><td>0.85</td><td>0.86</td></tr>
+          <tr><td class="left">+ Strategy</td><td>0.39</td><td>0.47</td><td>0.22</td><td>0.75</td><td>0.50</td><td>0.71</td></tr>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Pro</td><td class="left">Base</td><td>0.21</td><td>0.17</td><td class="best">0.18</td><td>0.73</td><td>2.51</td><td>0.71</td></tr>
+          <tr><td class="left">+ Strategy</td><td>0.23</td><td class="best">0.10</td><td>0.33</td><td>0.44</td><td>0.70</td><td>0.69</td></tr>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 3 Flash</td><td class="left">Base</td><td>0.26</td><td>0.49</td><td>0.50</td><td>0.36</td><td>0.79</td><td>0.23</td></tr>
+          <tr><td class="left">+ Strategy</td><td class="best">0.17</td><td>0.14</td><td>0.41</td><td class="best">0.27</td><td class="best">0.19</td><td class="best">0.31</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="results-table-wrap">
+      <table class="results">
+        <caption>Quantum Mechanics &mdash; combined config uses &lambda;=25 and <em>p</em>=1</caption>
+        <thead>
+          <tr>
+            <th rowspan="3" class="left">Model</th>
+            <th rowspan="3" class="left">Prompt</th>
+            <th colspan="6" class="group">Prediction Error&nbsp;&darr;</th>
+          </tr>
+          <tr>
+            <th rowspan="2">Normal</th>
+            <th colspan="2" class="group">Measurement Norm</th>
+            <th colspan="2" class="group">Entanglement</th>
+            <th rowspan="2">Combined</th>
+          </tr>
+          <tr>
+            <th><em>p</em>=1</th>
+            <th><em>p</em>=3</th>
+            <th>&lambda;=5.0</th>
+            <th>&lambda;=15.0</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Flash Lite</td><td class="left">Base</td><td>0.17</td><td>0.66</td><td>0.31</td><td>0.11</td><td>0.25</td><td>0.54</td></tr>
+          <tr><td class="left">+ Strategy</td><td>0.11</td><td>0.61</td><td>0.21</td><td>0.14</td><td>0.14</td><td>0.55</td></tr>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Flash</td><td class="left">Base</td><td>0.14</td><td>0.54</td><td>0.13</td><td>0.13</td><td>0.18</td><td>0.60</td></tr>
+          <tr><td class="left">+ Strategy</td><td>0.11</td><td>0.47</td><td>0.09</td><td>0.07</td><td>0.16</td><td>0.59</td></tr>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Pro</td><td class="left">Base</td><td>0.08</td><td>0.52</td><td>0.10</td><td>0.14</td><td>0.15</td><td>0.58</td></tr>
+          <tr><td class="left">+ Strategy</td><td class="best">0.03</td><td class="best">0.46</td><td>0.08</td><td>0.10</td><td>0.12</td><td>0.40</td></tr>
+          <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 3 Flash</td><td class="left">Base</td><td>0.11</td><td>0.53</td><td>0.04</td><td>0.30</td><td>0.16</td><td class="best">0.39</td></tr>
+          <tr><td class="left">+ Strategy</td><td>0.05</td><td>0.48</td><td class="best">0.05</td><td class="best">0.07</td><td class="best">0.09</td><td>0.92</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<section id="ablations" class="tinted">
+  <div class="container">
+    <h2>Ablations</h2>
+    <p>
+      We probe how prediction error scales along two axes of the Classical Mechanics environment: the number of interacting particles, and the dimensionality of the state space.
+    </p>
+
+    <div class="figure-grid">
+      <figure>
+        <img src="static/images/complexity_n.png" alt="Prediction error vs. number of particles" />
+        <figcaption>
+          <strong>Number of particles.</strong> Predictive error grows with the number of particles in the classical environment.
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="static/images/complexity_dim.png" alt="Prediction error in 2D vs. 3D" />
+        <figcaption>
+          <strong>Dimensionality.</strong> Predictive performance is largely consistent between 2D and 3D systems.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="variants">
+  <div class="container">
+    <h2>Variants</h2>
+    <p>
+      Beyond predictive error on the default environments, MaD Physics supports several variants that probe additional capabilities: image-based observations, in-context learning across episodes, and parameter inference under a known structural form.
+    </p>
+
+    <div class="variants-grid">
+      <div class="variant">
+        <h3>Visual observations</h3>
+        <p>An additional variant of the Classical environment provides only image renderings of the system instead of numerical state values. Trends across model capability and altered laws hold, but errors are noticeably larger.</p>
+        <div class="results-table-wrap">
+          <table class="results">
+            <caption>Visual Classical Mechanics</caption>
+            <thead>
+              <tr>
+                <th rowspan="2" class="left">Model</th>
+                <th rowspan="2" class="left">Prompt</th>
+                <th colspan="2" class="group">Pred. Err.&nbsp;&darr;</th>
+              </tr>
+              <tr>
+                <th>Normal</th>
+                <th>&kappa;=10</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Flash</td><td class="left">Base</td><td>6.81</td><td>1786.13</td></tr>
+              <tr><td class="left">+ Strat.</td><td>3.16</td><td>15.64</td></tr>
+              <tr class="model-start"><td class="left model-name" rowspan="2">Gemini 2.5 Pro</td><td class="left">Base</td><td>4.56</td><td>21.65</td></tr>
+              <tr><td class="left">+ Strat.</td><td class="best">0.65</td><td class="best">13.23</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="variant">
+        <h3>In-context learning</h3>
+        <p>Prediction error on Classical Mechanics across episodes for Gemini 2.5 Pro and Gemini 3 Flash. Gemini 3 Flash starts lower and continues to improve, while 2.5 Pro fails to learn under altered physics.</p>
+        <img src="static/images/icl.png" alt="In-context learning prediction error over episodes" />
+      </div>
+
+      <div class="variant">
+        <h3>Parameter inference</h3>
+        <p>Active-sensing variant: estimate &kappa; (the inertial-memory coupling) given the model&rsquo;s structural form. Gemini 2.5 Pro consistently <em>underestimates</em> &kappa;, indicating a bias toward standard physics.</p>
+        <img src="static/images/param_inference.png" alt="Estimated vs. ground-truth κ for parameter inference" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="limitations" class="tinted">
+  <div class="container">
+    <span class="section-eyebrow">Scope</span>
+    <h2>Limitations</h2>
+    <ul class="features">
+      <li>
+        <strong>Minimal scaffold.</strong> We deliberately use a simple agent scaffold with code execution; richer scaffolds (planners, memory, multi-agent setups) may close some of the observed gaps.
+      </li>
+      <li>
+        <strong>Three domains.</strong> The benchmark is limited to 3 minimal physical systems. Future work can extend the benchmark with different and more sophisticated systems.
+      </li>
+      <li>
+        <strong>Short horizon.</strong> We limit the budget to restrict the task to shorter horizons, which also makes the task more challenging. 
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section id="bibtex">
+  <div class="container">
+    <h2>BibTeX</h2>
+<pre class="bibtex">@article{jain2026madphysics,
+  title   = {{MaD} Physics: Evaluating Information Seeking Under Constraints in Physical Environments},
+  author  = {Jain, Moksh and Bennani, Mehdi and Bausch, Johannes and
+             Chervonyi, Yuri and Georgiev, Bogdan and Osindero, Simon and
+             Toma\v{s}ev, Nenad},
+  year    = {2026}
+}</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>
+      Page template inspired by academic project pages such as <a href="https://nerfies.github.io/">Nerfies</a>.
+    </p>
+  </div>
+</footer>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>
